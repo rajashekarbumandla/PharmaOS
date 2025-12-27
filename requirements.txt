@@ -1,0 +1,7 @@
+flask
+flask-sqlalchemy
+pandas
+numpy
+werkzeug
+Flask-Login
+gunicorn
