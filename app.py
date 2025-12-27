@@ -613,25 +613,45 @@ def add_batch():
 
     return render_template("add_batch.html", medicines=medicines)
 
+import os
+import smtplib
+from email.message import EmailMessage
+
 def send_otp_email(to_email, otp):
-    msg = EmailMessage()
-    msg.set_content(f"Your OTP for Pharmacy Login is: {otp}")
-    msg["Subject"] = "Pharmacy OTP Verification"
-    msg["From"] = "YOUR_EMAIL@gmail.com"
-    msg["To"] = to_email
+    try:
+        EMAIL_USER = os.environ.get("EMAIL_USER")
+        EMAIL_PASS = os.environ.get("EMAIL_PASS")
 
-    server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-    server.login("pranavbharadwaj169@gmail.com", "qktw pezn asfx hvdf")
-    server.send_message(msg)
-    server.quit()
+        if not EMAIL_USER or not EMAIL_PASS:
+            print("Email env variables missing")
+            return False
 
-from flask_dance.contrib.google import make_google_blueprint, google
-from flask import url_for
-google_bp = make_google_blueprint(
-    client_id="GOOGLE_CLIENT_ID",
-    client_secret="GOOGLE_CLIENT_SECRET",
-    scope=["profile", "email"]
-)
+        msg = EmailMessage()
+        msg["Subject"] = "PharmaOS OTP Verification"
+        msg["From"] = EMAIL_USER
+        msg["To"] = to_email
+        msg.set_content(f"""
+Hello,
+
+Your OTP for PharmaOS login is:
+
+{otp}
+
+This OTP is valid for 5 minutes.
+
+– PharmaOS Team
+""")
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+            server.login(EMAIL_USER, EMAIL_PASS)
+            server.send_message(msg)
+
+        return True
+
+    except Exception as e:
+        print("OTP Email Error:", e)
+        return False
+
 
 app.register_blueprint(google_bp, url_prefix="/login")
 
