@@ -1,4 +1,5 @@
 flask
+flask-dance
 flask-sqlalchemy
 pandas
 numpy
@@ -6,3 +7,4 @@ werkzeug
 Flask-Login
 reportlab
 gunicorn
+
