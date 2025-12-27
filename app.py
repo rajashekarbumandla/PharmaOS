@@ -653,7 +653,6 @@ This OTP is valid for 5 minutes.
         return False
 
 
-app.register_blueprint(google_bp, url_prefix="/login")
 
 
 @app.route("/google-login")
