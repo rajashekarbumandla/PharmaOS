@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Dashboard | PharmacyOS</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2A6EBB;
+            --primary-dark: #1A4F8B;
+            --secondary: #00C897;
+            --accent: #FF6B6B;
+            --warning: #FFA41B;
+            --success: #4CAF50;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8FAFF;
+            --bg-tertiary: #EFF3FF;
+            --text-primary: #1A1A2E;
+            --text-secondary: #545D7A;
+            --gradient-primary: linear-gradient(135deg, #2A6EBB 0%, #1A4F8B 100%);
+            --gradient-secondary: linear-gradient(135deg, #00C897 0%, #009C7A 100%);
+            --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            --shadow-md: 0 8px 24px rgba(42, 110, 187, 0.12);
+            --shadow-lg: 0 16px 48px rgba(42, 110, 187, 0.16);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--gradient-primary);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            transition: var(--transition);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: var(--bg-tertiary);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: var(--bg-tertiary);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .stat-icon.primary { background: var(--gradient-primary); }
+        .stat-icon.secondary { background: var(--gradient-secondary); }
+        .stat-icon.accent { background: var(--gradient-accent); }
+        .stat-icon.warning { background: linear-gradient(135deg, var(--warning), #FF8C00); }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(42, 110, 187, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(42, 110, 187, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 20px 14px 50px;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(42, 110, 187, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .filter-select {
+            padding: 14px 20px;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 200px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+        }
+
+        /* Inventory Table */
+        .table-container {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .table-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-title i {
+            color: var(--primary);
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .inventory-table thead {
+            background: var(--bg-tertiary);
+        }
+
+        .inventory-table th {
+            padding: 18px 20px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-primary);
+            border-bottom: 2px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .inventory-table tbody tr {
+            transition: var(--transition);
+            border-bottom: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .inventory-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .inventory-table td {
+            padding: 18px 20px;
+            vertical-align: middle;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status-safe {
+            background: rgba(0, 200, 151, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(0, 200, 151, 0.2);
+        }
+
+        .status-warning {
+            background: rgba(255, 164, 27, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(255, 164, 27, 0.2);
+        }
+
+        .status-danger {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-container {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Alert Banner */
+        .alert-banner {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .alert-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-accent);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .alert-message {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .search-container {
+                min-width: 100%;
+            }
+            
+            .inventory-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <span>Pharmacy<span style="color: var(--secondary);">OS</span></span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="/inventory" class="nav-link active">Inventory</a></li>
+                <li><a href="/forecast" class="nav-link">Forecast</a></li>
+                <li><a href="/alerts" class="nav-link">Alerts</a></li>
+                <li><a href="/seasonal" class="nav-link">Seasonal</a></li>
+                <li> <a href="/add_medicine" class="btn btn-primary"></a></li>
+            </ul>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="fas fa-boxes"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ inventory|length }}</div>
+                    <div class="stat-label">Total Items in Inventory</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon secondary">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ inventory|map(attribute='drug')|unique|list|length }}</div>
+                    <div class="stat-label">Unique Medicines</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon accent">
+                    <i class="fas fa-hourglass-end"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ expired_count }}</div>
+                    <div class="stat-label">Expired Batches</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-content">
+                    <div class="stat-value">{{ expiring_soon_count if expiring_soon_count else 0 }}</div>
+                    <div class="stat-label">Expiring Soon (30 days)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Banner -->
+        {% if expired_count > 0 %}
+        <div class="alert-banner">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="alert-content">
+                <div class="alert-title">⚠ Expired Batches Removed</div>
+                <div class="alert-message">{{ expired_count }} expired batch{% if expired_count > 1 %}es{% endif %} have been automatically removed from your FEFO inventory</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/add_medicine" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i>
+                Add New Medicine
+            </a>
+            <a href="/add_batch" class="btn btn-primary">
+                <i class="fas fa-box"></i>
+                Add New Batch
+            </a>
+            <a href="/dashboard" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div class="filter-row">
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search medicine or batch..." id="searchInput">
+                </div>
+                
+                <select class="filter-select" id="filterMedicine">
+                    <option value="">All Medicines</option>
+                    {% for medicine in inventory|map(attribute='drug')|unique|sort %}
+                    <option value="{{ medicine }}">{{ medicine }}</option>
+                    {% endfor %}
+                </select>
+                
+                <select class="filter-select" id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="safe">Safe Stock</option>
+                    <option value="warning">Expiring Soon</option>
+                    <option value="danger">Critical</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="table-container">
+            <div class="table-header">
+                <h2 class="table-title">
+                    <i class="fas fa-boxes-stacked"></i>
+                    Inventory (FEFO - First Expired, First Out)
+                </h2>
+                <div>
+                    <span class="status-badge status-safe">
+                        <i class="fas fa-check-circle"></i>
+                        {{ inventory|length }} Items
+                    </span>
+                </div>
+            </div>
+
+            {% if inventory %}
+            <table class="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Batch Number</th>
+                        <th>Expiry Date</th>
+                        <th>Quantity</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                  {% for i in inventory %}
+<tr class="inventory-item" 
+    data-medicine="{{ i.drug }}" 
+    data-batch="{{ i.batch }}"
+    data-status="{{ i.expiry_status }}">
+    <td>
+        <strong>{{ i.drug }}</strong>
+    </td>
+    <td>{{ i.batch }}</td>
+    <td>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-calendar" style="color: var(--text-secondary);"></i>
+            {{ i.expiry }}
+            {% if i.expiry_status == 'warning' %}
+            <i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i>
+            {% elif i.expiry_status == 'danger' %}
+            <i class="fas fa-skull-crossbones" style="color: var(--accent);"></i>
+            {% endif %}
+        </div>
+    </td>
+    <td><strong>{{ i.qty }}</strong> units</td>
+    <td>{{ i.source }}</td>
+    <td>
+        {% if i.expiry_status == 'safe' %}
+        <span class="status-badge status-safe">
+            <i class="fas fa-check-circle"></i>
+            Safe
+        </span>
+        {% elif i.expiry_status == 'warning' %}
+        <span class="status-badge status-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            Expiring Soon
+        </span>
+        {% elif i.expiry_status == 'danger' %}
+        <span class="status-badge status-danger">
+            <i class="fas fa-skull-crossbones"></i>
+            Critical
+        </span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-secondary);">
+                <i class="fas fa-box-open" style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                <h3 style="margin-bottom: 10px;">No Inventory Items Found</h3>
+                <p style="margin-bottom: 30px;">Start by adding medicines or batches to your inventory</p>
+                <a href="/add_medicine" class="btn btn-primary">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Your First Medicine
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i>
+                Inventory Analytics
+            </h2>
+            
+            <div class="charts-grid">
+                <!-- Stock Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Stock Levels by Medicine</div>
+                        <span class="status-badge status-safe">
+                            <i class="fas fa-chart-bar"></i>
+                            Bar Chart
+                        </span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Expiry Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Expiry Status Distribution</div>
+                        <span class="status-badge status-warning">
+                            <i class="fas fa-pie-chart"></i>
+                            Pie Chart
+                        </span>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="expiryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Note -->
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(42, 110, 187, 0.1); color: var(--text-secondary);">
+            <p>
+                <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
+                <strong>FEFO Tip:</strong> The system automatically prioritizes medicines with earliest expiry dates for dispensing
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                Last updated: {{ now }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Backend Data to JavaScript -->
+    <script>
+        // Data passed from Flask backend - preserving all variable names
+        const stockLabels = {{ stock_labels | tojson }};
+        const stockValues = {{ stock_values | tojson }};
+
+        const expiryLabels = {{ expiry_labels | tojson }};
+        const expiryValues = {{ expiry_values | tojson }};
+
+        const sourceLabels = {{ source_labels | tojson }};
+        const sourceValues = {{ source_values | tojson }};
+    </script>
+
+    <!-- Main JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Charts
+            initializeCharts();
+            
+            // Setup Search and Filter
+            setupSearchFilter();
+            
+            // Add animations
+            addAnimations();
+        });
+
+        // Chart Initialization
+        function initializeCharts() {
+            // Stock Chart
+            const stockCtx = document.getElementById('stockChart').getContext('2d');
+            new Chart(stockCtx, {
+                type: "bar",
+                data: {
+                    labels: stockLabels,
+                    datasets: [{
+                        label: "Total Stock",
+                        data: stockValues,
+                        backgroundColor: '#2A6EBB',
+                        borderColor: '#2A6EBB',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' units';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#2A6EBB',
+                            borderWidth: 1
+                        }
+                    }
+                }
+            });
+
+            // Expiry Chart
+            const expiryCtx = document.getElementById('expiryChart').getContext('2d');
+            new Chart(expiryCtx, {
+                type: "doughnut",
+                data: {
+                    labels: expiryLabels,
+                    datasets: [{
+                        data: expiryValues,
+                        backgroundColor: [
+                            '#00C897',
+                            '#FFA41B',
+                            '#FF6B6B'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#FFFFFF'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(26, 26, 46, 0.95)',
+                            titleColor: '#FFFFFF',
+                            bodyColor: '#FFFFFF',
+                            borderColor: '#2A6EBB',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} batches (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Search and Filter Functionality
+        function setupSearchFilter() {
+            const searchInput = document.getElementById('searchInput');
+            const filterMedicine = document.getElementById('filterMedicine');
+            const filterStatus = document.getElementById('filterStatus');
+            const inventoryItems = document.querySelectorAll('.inventory-item');
+
+            function filterTable() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedMedicine = filterMedicine.value;
+                const selectedStatus = filterStatus.value;
+                
+                inventoryItems.forEach(item => {
+                    const medicine = item.getAttribute('data-medicine').toLowerCase();
+                    const batch = item.getAttribute('data-batch').toLowerCase();
+                    const status = item.getAttribute('data-status');
+                    
+                    const matchesSearch = !searchTerm || 
+                        medicine.includes(searchTerm) || 
+                        batch.includes(searchTerm);
+                    
+                    const matchesMedicine = !selectedMedicine || 
+                        item.getAttribute('data-medicine') === selectedMedicine;
+                    
+                    const matchesStatus = !selectedStatus || 
+                        status === selectedStatus;
+                    
+                    if (matchesSearch && matchesMedicine && matchesStatus) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            searchInput.addEventListener('input', filterTable);
+            filterMedicine.addEventListener('change', filterTable);
+            filterStatus.addEventListener('change', filterTable);
+        }
+
+        // Add Animations
+        function addAnimations() {
+            // Animate cards on load
+            document.querySelectorAll('.stat-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Add hover effects to table rows
+            document.querySelectorAll('.inventory-table tbody tr').forEach(row => {
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = '#EFF3FF';
+                });
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+            });
+        }
+
+        // Auto-update expiry status
+        function updateExpiryStatus() {
+            const today = new Date();
+            const thirtyDaysFromNow = new Date();
+            thirtyDaysFromNow.setDate(today.getDate() + 30);
+            
+            document.querySelectorAll('.inventory-item').forEach(row => {
+                const expiryDateText = row.cells[2].textContent.trim();
+                const expiryDate = new Date(expiryDateText);
+                
+                if (expiryDate < today) {
+                    row.setAttribute('data-status', 'danger');
+                    row.cells[5].innerHTML = `
+                        <span class="status-badge status-danger">
+                            <i class="fas fa-skull-crossbones"></i>
+                            Critical
+                        </span>
+                    `;
+                } else if (expiryDate <= thirtyDaysFromNow) {
+                    row.setAttribute('data-status', 'warning');
+                    row.cells[5].innerHTML = `
+                        <span class="status-badge status-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Expiring Soon
+                        </span>
+                    `;
+                }
+            });
+        }
+
+        // Run expiry status update every minute
+        setInterval(updateExpiryStatus, 60000);
+        updateExpiryStatus(); // Run immediately on load
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+F to focus search
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // Ctrl+P to print
+            if (e.ctrlKey && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+        });
+
+        // Print Functionality
+        window.printReport = function() {
+            const printContent = document.querySelector('.table-container').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>Inventory Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background: #f5f5f5; padding: 12px; text-align: left; }
+                        td { padding: 10px; border-bottom: 1px solid #ddd; }
+                        .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; }
+                        .status-safe { background: #e6f7f2; color: #00C897; }
+                        .status-warning { background: #fff5e6; color: #FFA41B; }
+                        .status-danger { background: #ffe6e6; color: #FF6B6B; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Inventory Report</h1>
+                    <p>Generated: ${new Date().toLocaleString()}</p>
+                    ${printContent}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        };
+
+        // Add print button to action buttons
+        const printBtn = document.createElement('button');
+        printBtn.className = 'btn btn-secondary';
+        printBtn.innerHTML = '<i class="fas fa-print"></i> Print Report';
+        printBtn.onclick = window.printReport;
+        document.querySelector('.action-buttons').appendChild(printBtn);
+    </script>
+</body>
+</html>

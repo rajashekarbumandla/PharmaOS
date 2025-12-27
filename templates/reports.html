@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports | PharmacyOS</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: Arial; background:#f5f7fb; }
+        .container { max-width:1200px; margin:auto; padding:20px; }
+
+        h2 { margin-bottom:20px; }
+
+        .actions {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding:10px 16px;
+            border-radius:6px;
+            background:#1976d2;
+            color:white;
+            text-decoration:none;
+            margin-right:10px;
+        }
+
+        table {
+            width:100%;
+            border-collapse: collapse;
+            background:white;
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding:12px;
+            border-bottom:1px solid #ddd;
+            text-align:left;
+        }
+
+        th { background:#1976d2; color:white; }
+
+        .safe { color:green; font-weight:bold; }
+        .low { color:orange; font-weight:bold; }
+        .out { color:red; font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>📊 Medicine Reports</h2>
+
+    <div class="actions">
+        <a href="/reports/download/csv" class="btn">
+            <i class="fas fa-file-csv"></i> Download CSV
+        </a>
+        <a href="/reports/download/pdf" class="btn">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </a>
+        <a href="/dashboard" class="btn">
+            ⬅ Back
+        </a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Medicine</th>
+                <th>Total Stock</th>
+                <th>Active Batches</th>
+                <th>Expired Batches</th>
+                <th>Nearest Expiry</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in reports %}
+            <tr>
+                <td>{{ r.name }}</td>
+                <td>{{ r.stock }}</td>
+                <td>{{ r.active_batches }}</td>
+                <td>{{ r.expired_batches }}</td>
+                <td>{{ r.nearest_expiry }}</td>
+                <td>
+                    {% if r.status == "Safe" %}
+                        <span class="safe">Safe</span>
+                    {% elif r.status == "Low Stock" %}
+                        <span class="low">Low</span>
+                    {% else %}
+                        <span class="out">Out</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

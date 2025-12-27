@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Pharmacy Assistant | PharmacyOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    <style>
+        :root {
+            --primary: #2A6EBB;
+            --primary-dark: #1A4F8B;
+            --secondary: #00C897;
+            --accent: #FF6B6B;
+            --warning: #FFA41B;
+            --success: #4CAF50;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8FAFF;
+            --bg-tertiary: #EFF3FF;
+            --text-primary: #1A1A2E;
+            --text-secondary: #545D7A;
+            --gradient-primary: linear-gradient(135deg, #2A6EBB 0%, #1A4F8B 100%);
+            --gradient-secondary: linear-gradient(135deg, #00C897 0%, #009C7A 100%);
+            --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            --gradient-chatbot: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow-md: 0 8px 24px rgba(42, 110, 187, 0.12);
+            --shadow-lg: 0 16px 48px rgba(42, 110, 187, 0.16);
+            --shadow-xl: 0 24px 64px rgba(42, 110, 187, 0.2);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0A0A1A;
+            --bg-secondary: #15152B;
+            --bg-tertiary: #1E1E3A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B7D6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(42, 110, 187, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 200, 151, 0.1) 0%, transparent 50%);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        /* Chatbot Container */
+        .chatbot-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+            border-radius: 24px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .chatbot-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-chatbot);
+        }
+
+        /* Chat Header */
+        .chat-header {
+            padding: 30px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid rgba(42, 110, 187, 0.1);
+            text-align: center;
+            position: relative;
+        }
+
+        .bot-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-chatbot);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            color: white;
+            font-size: 2.5rem;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .chat-title {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .chat-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: 500px;
+            background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        /* Messages */
+        .message-container {
+            display: flex;
+            margin-bottom: 25px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-container.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message-container.user .message-avatar {
+            background: var(--gradient-primary);
+            color: white;
+            margin-left: 15px;
+        }
+
+        .message-container.bot .message-avatar {
+            background: var(--bg-tertiary);
+            color: var(--primary);
+            margin-right: 15px;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 18px 22px;
+            border-radius: 18px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .message-container.user .message-bubble {
+            background: var(--gradient-primary);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .message-container.bot .message-bubble {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-top-left-radius: 4px;
+            border: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .message-content {
+            line-height: 1.5;
+        }
+
+        .message-content strong {
+            color: var(--primary);
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 25px 30px;
+            background: var(--bg-primary);
+            border-top: 1px solid rgba(42, 110, 187, 0.1);
+            position: relative;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 18px 25px;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: 16px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+            resize: none;
+            min-height: 56px;
+            max-height: 120px;
+            line-height: 1.5;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(42, 110, 187, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(42, 110, 187, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(42, 110, 187, 0.4);
+        }
+
+        .btn-accent {
+            background: var(--gradient-chatbot);
+            color: white;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-accent:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .quick-action {
+            padding: 10px 18px;
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-action:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Bot Thinking Indicator */
+        .thinking-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            margin-bottom: 25px;
+            max-width: 200px;
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .thinking-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        /* Help Section */
+        .help-section {
+            margin-top: 40px;
+            padding: 25px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            border: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .help-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .help-item {
+            background: var(--bg-primary);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .help-category {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-examples {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(42, 110, 187, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Scrollbar Styling */
+        .chat-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-area::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 3px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .chat-title {
+                font-size: 1.8rem;
+            }
+            
+            .chat-area {
+                padding: 20px;
+                max-height: 400px;
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+            }
+            
+            .input-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .quick-actions {
+                justify-content: center;
+            }
+        }
+
+        /* Voice Input */
+        .voice-input {
+            position: relative;
+        }
+
+        .voice-btn {
+            background: var(--gradient-accent);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .voice-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-btn.listening {
+            animation: pulse 1s infinite;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <span>Pharmacy<span style="color: var(--secondary);">OS</span></span>
+            </a>
+            
+            <div class="header-controls">
+                <a href="/dashboard" class="back-button">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chatbot Container -->
+        <div class="chatbot-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h1 class="chat-title">AI Pharmacy Assistant</h1>
+                <p class="chat-subtitle">Ask me anything about stock levels, expiry dates, sales analytics, and inventory management</p>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-area" id="chatArea">
+                <!-- Initial Bot Message -->
+                <div class="message-container bot">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            👋 Hello! I'm your AI Pharmacy Assistant powered by PharmacyOS. I can help you with:
+                            <br><br>
+                            📦 <strong>Stock Levels:</strong> "What's our stock of Paracetamol?"
+                            <br>
+                            ⏰ <strong>Expiry Dates:</strong> "What's expiring soon?"
+                            <br>
+                            💰 <strong>Sales Analytics:</strong> "Show me sales for last month"
+                            <br>
+                            📊 <strong>Inventory Insights:</strong> "What needs reordering?"
+                            <br><br>
+                            Try asking me a question!
+                        </div>
+                        <div class="message-time">Just now</div>
+                    </div>
+                </div>
+
+                <!-- Thinking Indicator (Hidden by default) -->
+                <div class="thinking-indicator" id="thinkingIndicator">
+                    <div class="thinking-dots">
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                    </div>
+                    <span>AI is thinking...</span>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <div class="quick-action" onclick="sendQuickMessage('What is our current stock?')">
+                    <i class="fas fa-boxes"></i>
+                    Check Stock
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('What items are expiring soon?')">
+                    <i class="fas fa-hourglass-end"></i>
+                    Expiry Alert
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Show me sales summary')">
+                    <i class="fas fa-chart-line"></i>
+                    Sales Report
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('What needs to be reordered?')">
+                    <i class="fas fa-shopping-cart"></i>
+                    Reorder List
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Find Paracetamol details')">
+                    <i class="fas fa-search"></i>
+                    Find Medicine
+                </div>
+                <div class="quick-action" onclick="sendQuickMessage('Give me inventory summary')">
+                    <i class="fas fa-chart-pie"></i>
+                    Inventory Summary
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <div class="input-container">
+                    <input type="text" 
+                           id="msg" 
+                           class="chat-input" 
+                           placeholder="Type your question here... (e.g., 'Stock of Amoxicillin?', 'What's expiring next week?')"
+                           onkeypress="handleKeyPress(event)">
+                    <button class="btn btn-accent" onclick="sendMessage()" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="help-section">
+            <h3 class="help-title">
+                <i class="fas fa-question-circle"></i>
+                What You Can Ask Me
+            </h3>
+            <div class="help-grid">
+                <div class="help-item">
+                    <div class="help-category">
+                        <i class="fas fa-boxes"></i>
+                        Stock & Inventory
+                    </div>
+                    <div class="help-examples">
+                        "Stock of [medicine]"<br>
+                        "Current inventory"<br>
+                        "Low stock items"<br>
+                        "Out of stock items"
+                    </div>
+                </div>
+                
+                <div class="help-item">
+                    <div class="help-category">
+                        <i class="fas fa-hourglass-end"></i>
+                        Expiry Management
+                    </div>
+                    <div class="help-examples">
+                        "Expiring soon"<br>
+                        "Expired items"<br>
+                        "Batch BATCH123 details"<br>
+                        "FEFO recommendations"
+                    </div>
+                </div>
+                
+                <div class="help-item">
+                    <div class="help-category">
+                        <i class="fas fa-chart-line"></i>
+                        Sales & Analytics
+                    </div>
+                    <div class="help-examples">
+                        "Sales summary"<br>
+                        "Revenue this month"<br>
+                        "Top selling drugs"<br>
+                        "Profit margin analysis"
+                    </div>
+                </div>
+                
+                <div class="help-item">
+                    <div class="help-category">
+                        <i class="fas fa-cart-plus"></i>
+                        Purchases & Orders
+                    </div>
+                    <div class="help-examples">
+                        "Purchase history"<br>
+                        "Suppliers list"<br>
+                        "Reorder suggestions"<br>
+                        "Pending orders"
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <i class="fas fa-lightbulb"></i>
+                <strong>Pro Tip:</strong> You can ask questions in natural language. Try "How much Paracetamol do we have?" or "What's expiring in 30 days?"
+            </p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                AI Assistant v2.0 • Powered by PharmacyOS • Real-time inventory data
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ===== THEME TOGGLE =====
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // ===== CHAT FUNCTIONALITY =====
+        const chatArea = document.getElementById('chatArea');
+        const messageInput = document.getElementById('msg');
+        const sendBtn = document.getElementById('sendBtn');
+        const thinkingIndicator = document.getElementById('thinkingIndicator');
+
+        // Add user message to chat
+        function addUserMessage(message) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container user';
+            messageContainer.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-content">${message}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+                <div class="message-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            `;
+            chatArea.appendChild(messageContainer);
+            scrollToBottom();
+        }
+
+        // Add bot message to chat
+        function addBotMessage(message) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message-container bot';
+            messageContainer.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="message-bubble">
+                    <div class="message-content">${formatBotMessage(message)}</div>
+                    <div class="message-time">${getCurrentTime()}</div>
+                </div>
+            `;
+            chatArea.appendChild(messageContainer);
+            scrollToBottom();
+        }
+
+        // Format bot message with emojis and styling
+        function formatBotMessage(message) {
+            // Add emojis based on keywords
+            let formatted = message
+                .replace(/stock/i, '📦 stock')
+                .replace(/expir/i, '⏰ $&')
+                .replace(/sale/i, '💰 $&')
+                .replace(/revenue/i, '💰 $&')
+                .replace(/profit/i, '📈 $&')
+                .replace(/alert/i, '⚠️ $&')
+                .replace(/warning/i, '⚠️ $&')
+                .replace(/safe/i, '✅ $&')
+                .replace(/low/i, '🟡 $&')
+                .replace(/high/i, '🟢 $&')
+                .replace(/out of stock/i, '🔴 Out of stock')
+                .replace(/expiring soon/i, '🟡 Expiring soon')
+                .replace(/expired/i, '🔴 Expired');
+            
+            // Format lists and bullet points
+            formatted = formatted.replace(/\n/g, '<br>');
+            formatted = formatted.replace(/\•/g, '•');
+            
+            return formatted;
+        }
+
+        // Get current time for message timestamp
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Scroll chat to bottom
+        function scrollToBottom() {
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addUserMessage(message);
+            
+            // Clear input
+            messageInput.value = '';
+            
+            // Show thinking indicator
+            thinkingIndicator.style.display = 'flex';
+            scrollToBottom();
+            
+            // Disable send button
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+            try {
+                // Send to backend
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+                
+                // Hide thinking indicator
+                thinkingIndicator.style.display = 'none';
+                
+                // Add bot response
+                setTimeout(() => {
+                    addBotMessage(data.reply || "I'm sorry, I couldn't process your request. Please try again.");
+                    
+                    // Re-enable send button
+                    sendBtn.disabled = false;
+                    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+                    
+                }, 500); // Small delay for natural conversation flow
+
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // Hide thinking indicator
+                thinkingIndicator.style.display = 'none';
+                
+                // Add error message
+                addBotMessage("Sorry, I'm having trouble connecting to the server. Please try again.");
+                
+                // Re-enable send button
+                sendBtn.disabled = false;
+                sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send';
+            }
+        }
+
+        // Quick message function
+        function sendQuickMessage(message) {
+            messageInput.value = message;
+            sendMessage();
+            
+            // Visual feedback for quick action
+            const quickActions = document.querySelectorAll('.quick-action');
+            quickActions.forEach(action => {
+                if (action.textContent.includes(message.split(' ')[0])) {
+                    action.style.transform = 'scale(0.95)';
+                    action.style.background = 'var(--primary)';
+                    action.style.color = 'white';
+                    setTimeout(() => {
+                        action.style.transform = '';
+                        action.style.background = '';
+                        action.style.color = '';
+                    }, 300);
+                }
+            });
+        }
+
+        // Handle Enter key press
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // ===== VOICE INPUT FUNCTIONALITY =====
+        let isListening = false;
+        let recognition = null;
+
+        // Check for browser support
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onstart = () => {
+                isListening = true;
+                document.querySelector('.voice-btn').classList.add('listening');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                messageInput.value = transcript;
+                sendMessage();
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                isListening = false;
+                document.querySelector('.voice-btn').classList.remove('listening');
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                document.querySelector('.voice-btn').classList.remove('listening');
+            };
+        }
+
+        // ===== DEMO RESPONSES =====
+        const demoResponses = {
+            "stock": "📦 **Current Stock Levels:**\n• Paracetamol: 125 units (3 batches)\n• Amoxicillin: 80 units (2 batches)\n• Ibuprofen: 45 units (1 batch)\n• Cetirizine: 200 units (4 batches)\n\n🟡 **Low Stock Alert:** Ibuprofen is below safety stock (50 units).",
+            "expir": "⏰ **Expiry Alerts:**\n• **Expiring within 30 days:**\n  - Batch BATCH2024-001 (Paracetamol): 15 units, expires 2024-04-15\n  - Batch LOT2024-A (Amoxicillin): 25 units, expires 2024-04-20\n\n✅ **Next expiry check:** 2 batches in May 2024.",
+            "sales": "💰 **Sales Summary (Last 30 days):**\n• Total Revenue: ₹85,420\n• Total Units Sold: 1,245\n• Top Selling: Paracetamol (320 units)\n• Growth: +12% from previous month",
+            "reorder": "📋 **Reorder Recommendations:**\n1. 🔴 **Ibuprofen** - Current: 45 units, Safety: 50 units\n2. 🟡 **Metformin** - Current: 60 units, Safety: 75 units\n3. 🟢 **Atorvastatin** - Current: 90 units, Safety: 100 units",
+            "inventory": "📊 **Inventory Summary:**\n• Total Medicines: 24\n• Active Batches: 52\n• Total Stock Value: ₹2,45,800\n• Average Stock Level: 85%\n• FEFO Compliance: 100%"
+        };
+
+        // ===== INITIALIZE =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus on input
+            setTimeout(() => {
+                messageInput.focus();
+            }, 500);
+            
+            // Add voice input button if supported
+            if (recognition) {
+                const inputContainer = document.querySelector('.input-container');
+                const voiceBtn = document.createElement('button');
+                voiceBtn.className = 'voice-btn';
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                voiceBtn.title = 'Voice Input';
+                voiceBtn.onclick = () => {
+                    if (!isListening) {
+                        recognition.start();
+                    } else {
+                        recognition.stop();
+                    }
+                };
+                inputContainer.insertBefore(voiceBtn, messageInput.nextSibling);
+            }
+            
+            // Add demo responses for testing (remove in production)
+            window.demoResponses = demoResponses;
+            
+            // Auto-scroll to bottom
+            scrollToBottom();
+        });
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+/ to clear chat
+            if (e.ctrlKey && e.key === '/') {
+                e.preventDefault();
+                if (confirm('Clear chat history?')) {
+                    chatArea.innerHTML = '';
+                    addBotMessage("Chat history cleared. How can I help you today?");
+                }
+            }
+            
+            // Ctrl+Space for voice input
+            if (e.ctrlKey && e.key === ' ' && recognition) {
+                e.preventDefault();
+                if (!isListening) {
+                    recognition.start();
+                }
+            }
+            
+            // Esc to clear input
+            if (e.key === 'Escape' && messageInput === document.activeElement) {
+                messageInput.value = '';
+            }
+        });
+
+        // ===== CHAT HISTORY =====
+        function saveChatHistory() {
+            const messages = Array.from(chatArea.children)
+                .filter(el => el.classList.contains('message-container'))
+                .map(el => ({
+                    type: el.classList.contains('user') ? 'user' : 'bot',
+                    content: el.querySelector('.message-content').textContent,
+                    time: el.querySelector('.message-time').textContent
+                }));
+            
+            localStorage.setItem('pharmacyChatHistory', JSON.stringify(messages));
+        }
+
+        function loadChatHistory() {
+            const saved = localStorage.getItem('pharmacyChatHistory');
+            if (saved) {
+                const messages = JSON.parse(saved);
+                messages.forEach(msg => {
+                    if (msg.type === 'user') {
+                        addUserMessage(msg.content);
+                    } else {
+                        addBotMessage(msg.content);
+                    }
+                });
+            }
+        }
+
+        // Auto-save chat history
+        setInterval(saveChatHistory, 5000);
+
+        // Load history on page load
+        loadChatHistory();
+    </script>
+</body>
+</html>

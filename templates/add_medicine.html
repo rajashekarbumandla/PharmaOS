@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Medicine | PharmacyOS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💊</text></svg>">
+    <style>
+        :root {
+            --primary: #2A6EBB;
+            --primary-dark: #1A4F8B;
+            --secondary: #00C897;
+            --accent: #FF6B6B;
+            --warning: #FFA41B;
+            --success: #4CAF50;
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8FAFF;
+            --bg-tertiary: #EFF3FF;
+            --text-primary: #1A1A2E;
+            --text-secondary: #545D7A;
+            --gradient-primary: linear-gradient(135deg, #2A6EBB 0%, #1A4F8B 100%);
+            --gradient-secondary: linear-gradient(135deg, #00C897 0%, #009C7A 100%);
+            --gradient-accent: linear-gradient(135deg, #FF6B6B 0%, #FF4757 100%);
+            --shadow-md: 0 8px 24px rgba(42, 110, 187, 0.12);
+            --shadow-lg: 0 16px 48px rgba(42, 110, 187, 0.16);
+            --shadow-xl: 0 24px 64px rgba(42, 110, 187, 0.2);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: #0A0A1A;
+            --bg-secondary: #15152B;
+            --bg-tertiary: #1E1E3A;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B7D6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(42, 110, 187, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 200, 151, 0.1) 0%, transparent 50%);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 12px 24px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            transition: var(--transition);
+        }
+
+        .back-button:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .header-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-secondary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header-content h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Form Container */
+        .form-container {
+            background: var(--bg-primary);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            border: 1px solid rgba(42, 110, 187, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: var(--gradient-primary);
+        }
+
+        /* Form Layout */
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .form-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Left - Main Inputs */
+        .form-left {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-label .required {
+            color: var(--accent);
+            font-size: 0.875rem;
+        }
+
+        .form-label .helper {
+            display: block;
+            font-weight: 400;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Input Styles */
+        .input-container {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 4px rgba(42, 110, 187, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .input-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Medicine Name Suggestions */
+        .suggestions-container {
+            margin-top: 12px;
+        }
+
+        .suggestions-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .suggestions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+        }
+
+        .suggestion-tag {
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .suggestion-tag:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Stock Levels Visualization */
+        .stock-visualization {
+            margin-top: 30px;
+        }
+
+        .stock-levels {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stock-card {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .stock-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stock-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .stock-card.safety .stock-icon {
+            color: var(--warning);
+        }
+
+        .stock-card.current .stock-icon {
+            color: var(--primary);
+        }
+
+        .stock-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stock-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stock Meter */
+        .stock-meter {
+            margin-top: 20px;
+        }
+
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .meter-bar {
+            height: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .meter-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.6s ease;
+        }
+
+        .meter-fill.safe {
+            background: var(--gradient-secondary);
+        }
+
+        .meter-fill.warning {
+            background: var(--gradient-accent);
+        }
+
+        .meter-fill.danger {
+            background: var(--gradient-accent);
+            animation: pulse 1s infinite;
+        }
+
+        .meter-status {
+            text-align: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        /* Form Right - Preview */
+        .form-right {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .preview-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .medicine-preview {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 30px;
+        }
+
+        .preview-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .preview-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .preview-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .preview-details {
+            display: grid;
+            gap: 15px;
+        }
+
+        .preview-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .item-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .item-value.safe {
+            color: var(--success);
+        }
+
+        .item-value.warning {
+            color: var(--warning);
+        }
+
+        .item-value.danger {
+            color: var(--accent);
+        }
+
+        /* AI Suggestions */
+        .ai-suggestions {
+            margin-top: 30px;
+        }
+
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .ai-suggestion {
+            background: var(--bg-primary);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .ai-suggestion p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .ai-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: var(--primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .ai-action:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(42, 110, 187, 0.1);
+        }
+
+        @media (max-width: 480px) {
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 24px rgba(42, 110, 187, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(42, 110, 187, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        /* Messages */
+        .message {
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.5s ease;
+        }
+
+        .message-success {
+            background: rgba(0, 200, 151, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(0, 200, 151, 0.2);
+        }
+
+        .message-error {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        .form-footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(42, 110, 187, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--bg-tertiary);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .form-container {
+                padding: 30px 20px;
+            }
+            
+            .page-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .header-content h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="nav-buttons">
+            <a href="/inventory" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Inventory
+            </a>
+            <button class="theme-toggle" id="themeToggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-icon">
+                <i class="fas fa-pills"></i>
+            </div>
+            <div class="header-content">
+                <h1>Add New Medicine</h1>
+                <p>Add a new medicine to your pharmacy inventory with intelligent stock management</p>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="message message-success" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <span>Medicine added successfully! Redirecting to inventory...</span>
+        </div>
+
+        <div class="message message-error" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Please fill all required fields correctly.</span>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <form method="post" id="addMedicineForm">
+                <div class="form-layout">
+                    <!-- Left Column - Form Inputs -->
+                    <div class="form-left">
+                        <!-- Medicine Name -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-pills"></i>
+                                Medicine Name
+                                <span class="required">*</span>
+                            </label>
+                            <div class="input-container">
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    class="form-input" 
+                                    placeholder="e.g., Paracetamol 500mg Tablets" 
+                                    required
+                                    id="medicineName"
+                                >
+                                <i class="fas fa-search input-icon"></i>
+                            </div>
+                            <div class="helper">Enter the full medicine name with strength and form</div>
+                            
+                            <!-- Suggestions -->
+                            <div class="suggestions-container">
+                                <div class="suggestions-title">Common Medicines:</div>
+                                <div class="suggestions-grid">
+                                    <div class="suggestion-tag" data-name="Paracetamol 500mg">Paracetamol 500mg</div>
+                                    <div class="suggestion-tag" data-name="Amoxicillin 250mg">Amoxicillin 250mg</div>
+                                    <div class="suggestion-tag" data-name="Ibuprofen 400mg">Ibuprofen 400mg</div>
+                                    <div class="suggestion-tag" data-name="Cetirizine 10mg">Cetirizine 10mg</div>
+                                    <div class="suggestion-tag" data-name="Metformin 500mg">Metformin 500mg</div>
+                                    <div class="suggestion-tag" data-name="Atorvastatin 10mg">Atorvastatin 10mg</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stock Levels -->
+                        <div class="stock-visualization">
+                            <div class="stock-levels">
+                                <div class="stock-card safety">
+                                    <div class="stock-icon">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div class="stock-value" id="safetyStockValue">20</div>
+                                    <div class="stock-label">Safety Stock</div>
+                                </div>
+                                
+                                <div class="stock-card current">
+                                    <div class="stock-icon">
+                                        <i class="fas fa-boxes"></i>
+                                    </div>
+                                    <div class="stock-value" id="currentStockValue">50</div>
+                                    <div class="stock-label">Current Stock</div>
+                                </div>
+                            </div>
+
+                            <!-- Safety Stock Input -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Safety Stock Level
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-container">
+                                    <input 
+                                        type="number" 
+                                        name="safety_stock" 
+                                        class="form-input" 
+                                        placeholder="Minimum stock level" 
+                                        required
+                                        min="0"
+                                        id="safetyStock"
+                                    >
+                                    <i class="fas fa-exclamation-triangle input-icon"></i>
+                                </div>
+                                <div class="helper">Minimum quantity to maintain before reordering</div>
+                            </div>
+
+                            <!-- Current Stock Input -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-boxes"></i>
+                                    Initial Current Stock
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="input-container">
+                                    <input 
+                                        type="number" 
+                                        name="current_stock" 
+                                        class="form-input" 
+                                        placeholder="Current available quantity" 
+                                        required
+                                        min="0"
+                                        id="currentStock"
+                                    >
+                                    <i class="fas fa-check-circle input-icon"></i>
+                                </div>
+                                <div class="helper">Current available quantity in inventory</div>
+                            </div>
+
+                            <!-- Stock Meter -->
+                            <div class="stock-meter">
+                                <div class="meter-label">
+                                    <span>Stock Status</span>
+                                    <span id="stockPercentage">250%</span>
+                                </div>
+                                <div class="meter-bar">
+                                    <div class="meter-fill" id="meterFill" style="width: 100%"></div>
+                                </div>
+                                <div class="meter-status" id="meterStatus">Optimal Stock Level</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Preview & AI -->
+                    <div class="form-right">
+                        <!-- Preview -->
+                        <h3 class="preview-title">
+                            <i class="fas fa-eye"></i>
+                            Medicine Preview
+                        </h3>
+                        
+                        <div class="medicine-preview">
+                            <div class="preview-header">
+                                <div class="preview-icon">
+                                    <i class="fas fa-pills"></i>
+                                </div>
+                                <div class="preview-name" id="previewName">New Medicine</div>
+                            </div>
+                            
+                            <div class="preview-details">
+                                <div class="preview-item">
+                                    <span class="item-label">Medicine ID</span>
+                                    <span class="item-value" id="previewId">MED-001</span>
+                                </div>
+                                <div class="preview-item">
+                                    <span class="item-label">Category</span>
+                                    <span class="item-value" id="previewCategory">Analgesic</span>
+                                </div>
+                                <div class="preview-item">
+                                    <span class="item-label">Safety Stock</span>
+                                    <span class="item-value" id="previewSafety">20 units</span>
+                                </div>
+                                <div class="preview-item">
+                                    <span class="item-label">Current Stock</span>
+                                    <span class="item-value" id="previewCurrent">50 units</span>
+                                </div>
+                                <div class="preview-item">
+                                    <span class="item-label">Stock Status</span>
+                                    <span class="item-value safe" id="previewStatus">Optimal</span>
+                                </div>
+                                <div class="preview-item">
+                                    <span class="item-label">Reorder Needed</span>
+                                    <span class="item-value" id="previewReorder">No</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Suggestions -->
+                        <div class="ai-suggestions">
+                            <h3 class="ai-title">
+                                <i class="fas fa-brain"></i>
+                                AI Suggestions
+                            </h3>
+                            
+                            <div class="loading-spinner" id="aiLoading">
+                                <div class="spinner"></div>
+                            </div>
+                            
+                            <div class="ai-suggestion" id="aiSuggestion1">
+                                <p><strong>📊 Based on similar medicines:</strong> Recommended safety stock: 25 units for optimal supply chain.</p>
+                                <div class="ai-action" onclick="applySuggestion(25)">
+                                    <i class="fas fa-magic"></i>
+                                    Apply this suggestion
+                                </div>
+                            </div>
+                            
+                            <div class="ai-suggestion" id="aiSuggestion2">
+                                <p><strong>⏰ Seasonal Insight:</strong> This medicine sees 30% higher demand during monsoon season.</p>
+                                <div class="ai-action" onclick="showSeasonalAlert()">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    View seasonal pattern
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="reset" class="btn btn-secondary" id="resetBtn">
+                        <i class="fas fa-redo"></i>
+                        Clear Form
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-plus-circle"></i>
+                        Add Medicine to Inventory
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Footer -->
+        <div class="form-footer">
+            <p>
+                <i class="fas fa-lightbulb"></i>
+                <strong>Tip:</strong> Maintain safety stock levels to prevent stockouts during peak demand periods.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // ===== THEME TOGGLE =====
+        const themeToggle = document.getElementById('themeToggle');
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        updateThemeIcon(currentTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // ===== FORM ELEMENTS =====
+        const form = document.getElementById('addMedicineForm');
+        const medicineNameInput = document.getElementById('medicineName');
+        const safetyStockInput = document.getElementById('safetyStock');
+        const currentStockInput = document.getElementById('currentStock');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        // ===== MEDICINE NAME SUGGESTIONS =====
+        document.querySelectorAll('.suggestion-tag').forEach(tag => {
+            tag.addEventListener('click', () => {
+                medicineNameInput.value = tag.getAttribute('data-name');
+                medicineNameInput.focus();
+                
+                // Animate the tag
+                tag.style.transform = 'scale(0.95)';
+                tag.style.background = 'var(--primary)';
+                tag.style.color = 'white';
+                
+                setTimeout(() => {
+                    tag.style.transform = 'scale(1)';
+                }, 200);
+                
+                // Simulate AI suggestions
+                simulateAIResponse();
+            });
+        });
+
+        // ===== STOCK MANAGEMENT =====
+        function updateStockVisualization() {
+            const safetyStock = parseInt(safetyStockInput.value) || 0;
+            const currentStock = parseInt(currentStockInput.value) || 0;
+            
+            // Update display values
+            document.getElementById('safetyStockValue').textContent = safetyStock;
+            document.getElementById('currentStockValue').textContent = currentStock;
+            
+            // Update preview
+            document.getElementById('previewSafety').textContent = safetyStock + ' units';
+            document.getElementById('previewCurrent').textContent = currentStock + ' units';
+            
+            // Calculate stock ratio
+            let ratio = 0;
+            let status = 'Optimal';
+            let statusClass = 'safe';
+            
+            if (safetyStock > 0 && currentStock > 0) {
+                ratio = (currentStock / safetyStock) * 100;
+                
+                if (currentStock <= safetyStock) {
+                    status = 'Low Stock';
+                    statusClass = 'danger';
+                } else if (currentStock <= safetyStock * 1.5) {
+                    status = 'Adequate';
+                    statusClass = 'warning';
+                } else {
+                    status = 'Optimal';
+                    statusClass = 'safe';
+                }
+                
+                // Cap ratio at 300% for visualization
+                const displayRatio = Math.min(ratio, 300);
+                document.getElementById('stockPercentage').textContent = Math.round(ratio) + '%';
+                
+                // Update meter
+                const meterFill = document.getElementById('meterFill');
+                meterFill.style.width = Math.min(displayRatio / 3, 100) + '%';
+                meterFill.className = 'meter-fill ' + statusClass;
+                
+                // Update status
+                document.getElementById('meterStatus').textContent = status;
+                document.getElementById('meterStatus').className = 'meter-status ' + statusClass;
+                
+                // Update preview status
+                document.getElementById('previewStatus').textContent = status;
+                document.getElementById('previewStatus').className = 'item-value ' + statusClass;
+                
+                // Update reorder recommendation
+                document.getElementById('previewReorder').textContent = currentStock <= safetyStock ? 'Yes' : 'No';
+                document.getElementById('previewReorder').className = currentStock <= safetyStock ? 'item-value danger' : 'item-value safe';
+            }
+        }
+
+        // Add event listeners for stock inputs
+        safetyStockInput.addEventListener('input', updateStockVisualization);
+        currentStockInput.addEventListener('input', updateStockVisualization);
+
+        // ===== MEDICINE NAME AUTO-PREVIEW =====
+        medicineNameInput.addEventListener('input', () => {
+            const name = medicineNameInput.value.trim();
+            
+            if (name) {
+                // Update preview
+                document.getElementById('previewName').textContent = name;
+                
+                // Auto-generate medicine ID
+                const prefix = name.substring(0, 3).toUpperCase();
+                const randomId = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                document.getElementById('previewId').textContent = prefix + '-' + randomId;
+                
+                // Categorize based on name
+                const nameLower = name.toLowerCase();
+                let category = 'General';
+                
+                if (nameLower.includes('paracetamol') || nameLower.includes('ibuprofen')) {
+                    category = 'Analgesic';
+                } else if (nameLower.includes('amoxicillin') || nameLower.includes('azithromycin')) {
+                    category = 'Antibiotic';
+                } else if (nameLower.includes('cetirizine') || nameLower.includes('loratadine')) {
+                    category = 'Antihistamine';
+                } else if (nameLower.includes('metformin')) {
+                    category = 'Anti-diabetic';
+                } else if (nameLower.includes('atorvastatin')) {
+                    category = 'Cholesterol';
+                }
+                
+                document.getElementById('previewCategory').textContent = category;
+                
+                // Simulate AI suggestions after a delay
+                clearTimeout(aiTimeout);
+                aiTimeout = setTimeout(simulateAIResponse, 1000);
+            }
+        });
+
+        let aiTimeout;
+        function simulateAIResponse() {
+            const aiLoading = document.getElementById('aiLoading');
+            const suggestion1 = document.getElementById('aiSuggestion1');
+            const suggestion2 = document.getElementById('aiSuggestion2');
+            
+            // Show loading
+            aiLoading.style.display = 'flex';
+            suggestion1.style.opacity = '0.5';
+            suggestion2.style.opacity = '0.5';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                aiLoading.style.display = 'none';
+                suggestion1.style.opacity = '1';
+                suggestion2.style.opacity = '1';
+                
+                // Generate random suggestions based on input
+                const safetyStock = parseInt(safetyStockInput.value) || 20;
+                const randomFactor = Math.floor(Math.random() * 10) + 1;
+                const suggestedSafety = safetyStock + randomFactor;
+                
+                // Update AI suggestion
+                const suggestionText = `<strong>📊 Based on similar medicines:</strong> Recommended safety stock: ${suggestedSafety} units for optimal supply chain.`;
+                document.querySelector('#aiSuggestion1 p').innerHTML = suggestionText;
+                
+                // Update button
+                document.querySelector('#aiSuggestion1 .ai-action').setAttribute('onclick', `applySuggestion(${suggestedSafety})`);
+                
+            }, 1500);
+        }
+
+        // ===== AI SUGGESTION FUNCTIONS =====
+        function applySuggestion(suggestedStock) {
+            safetyStockInput.value = suggestedStock;
+            updateStockVisualization();
+            
+            // Show confirmation
+            const confirmation = document.createElement('div');
+            confirmation.className = 'message message-success';
+            confirmation.innerHTML = '<i class="fas fa-check-circle"></i> AI suggestion applied successfully';
+            confirmation.style.position = 'fixed';
+            confirmation.style.bottom = '20px';
+            confirmation.style.right = '20px';
+            confirmation.style.width = 'auto';
+            confirmation.style.zIndex = '1000';
+            
+            document.body.appendChild(confirmation);
+            
+            setTimeout(() => {
+                confirmation.style.opacity = '0';
+                setTimeout(() => confirmation.remove(), 300);
+            }, 3000);
+        }
+
+        function showSeasonalAlert() {
+            alert('🌧️ Seasonal Pattern:\n\nThis medicine typically sees increased demand during:\n• Monsoon season (June-September): +30%\n• Winter season (December-February): +15%\n\nConsider increasing safety stock during these periods.');
+        }
+
+        // ===== FORM VALIDATION & SUBMISSION =====
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Hide previous messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            
+            // Validate form
+            const errors = [];
+            
+            if (!medicineNameInput.value.trim()) {
+                errors.push('Please enter a medicine name');
+                medicineNameInput.style.borderColor = 'var(--accent)';
+            } else {
+                medicineNameInput.style.borderColor = '';
+            }
+            
+            const safetyStock = parseInt(safetyStockInput.value);
+            if (!safetyStock || safetyStock < 0) {
+                errors.push('Please enter a valid safety stock (minimum 0)');
+                safetyStockInput.style.borderColor = 'var(--accent)';
+            } else {
+                safetyStockInput.style.borderColor = '';
+            }
+            
+            const currentStock = parseInt(currentStockInput.value);
+            if (!currentStock || currentStock < 0) {
+                errors.push('Please enter a valid current stock (minimum 0)');
+                currentStockInput.style.borderColor = 'var(--accent)';
+            } else {
+                currentStockInput.style.borderColor = '';
+            }
+            
+            // Check if current stock is too low compared to safety
+            if (currentStock < safetyStock * 0.5) {
+                errors.push('Warning: Current stock is very low compared to safety stock');
+            }
+            
+            if (errors.length > 0) {
+                errorText.textContent = errors.join('. ');
+                errorMessage.style.display = 'flex';
+                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            
+            // Show loading state
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Medicine...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Success simulation
+                successMessage.style.display = 'flex';
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Medicine Added!';
+                
+                // Update inventory stats (simulated)
+                updateInventoryStats();
+                
+                // Redirect after delay
+                setTimeout(() => {
+                    // In production, this would submit the form
+                    form.submit();
+                }, 2000);
+                
+            }, 1500);
+        });
+
+        // ===== RESET BUTTON =====
+        document.getElementById('resetBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            if (confirm('Are you sure you want to clear all form data?')) {
+                form.reset();
+                
+                // Reset preview
+                document.getElementById('previewName').textContent = 'New Medicine';
+                document.getElementById('previewId').textContent = 'MED-001';
+                document.getElementById('previewCategory').textContent = 'General';
+                document.getElementById('previewStatus').textContent = 'Optimal';
+                document.getElementById('previewStatus').className = 'item-value safe';
+                document.getElementById('previewReorder').textContent = 'No';
+                document.getElementById('previewReorder').className = 'item-value safe';
+                
+                // Reset stock visualization
+                updateStockVisualization();
+                
+                // Reset input styles
+                [medicineNameInput, safetyStockInput, currentStockInput].forEach(input => {
+                    input.style.borderColor = '';
+                });
+                
+                // Show success message
+                const resetMessage = document.createElement('div');
+                resetMessage.className = 'message message-success';
+                resetMessage.innerHTML = '<i class="fas fa-redo"></i> Form cleared successfully';
+                resetMessage.style.display = 'flex';
+                
+                form.insertBefore(resetMessage, form.firstChild);
+                
+                setTimeout(() => {
+                    resetMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // ===== UPDATE INVENTORY STATS =====
+        function updateInventoryStats() {
+            // In a real app, this would update backend stats
+            console.log('Updating inventory stats...');
+            
+            // Show celebration animation
+            const headerIcon = document.querySelector('.header-icon');
+            headerIcon.style.animation = 'pulse 0.5s ease 3';
+            
+            setTimeout(() => {
+                headerIcon.style.animation = 'pulse 2s infinite';
+            }, 1500);
+        }
+
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+Enter to submit
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                form.requestSubmit();
+            }
+            
+            // Ctrl+Shift+R to reset
+            if (e.ctrlKey && e.shiftKey && e.key === 'R') {
+                e.preventDefault();
+                document.getElementById('resetBtn').click();
+            }
+            
+            // Escape to focus name input
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                medicineNameInput.focus();
+            }
+        });
+
+        // ===== INITIALIZE =====
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize stock visualization
+            updateStockVisualization();
+            
+            // Auto-focus medicine name input
+            setTimeout(() => {
+                medicineNameInput.focus();
+            }, 300);
+            
+            // Show initial AI suggestions
+            simulateAIResponse();
+            
+            // Set minimum values
+            safetyStockInput.min = 0;
+            currentStockInput.min = 0;
+        });
+
+        // ===== FORM AUTO-SAVE =====
+        let autoSaveTimeout;
+        function autoSaveForm() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const formData = new FormData(form);
+                const data = {};
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                // Simulate auto-save
+                localStorage.setItem('medicineFormDraft', JSON.stringify(data));
+                
+                // Show auto-save indicator
+                const indicator = document.createElement('div');
+                indicator.className = 'message message-success';
+                indicator.style.position = 'fixed';
+                indicator.style.bottom = '20px';
+                indicator.style.right = '20px';
+                indicator.style.width = 'auto';
+                indicator.innerHTML = '<i class="fas fa-save"></i> Draft saved';
+                indicator.style.display = 'flex';
+                
+                document.body.appendChild(indicator);
+                
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                    setTimeout(() => indicator.remove(), 300);
+                }, 2000);
+                
+            }, 2000);
+        }
+
+        // Add auto-save listeners
+        [medicineNameInput, safetyStockInput, currentStockInput].forEach(input => {
+            input.addEventListener('input', autoSaveForm);
+        });
+
+        // Load saved draft on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedDraft = localStorage.getItem('medicineFormDraft');
+            if (savedDraft) {
+                try {
+                    const draft = JSON.parse(savedDraft);
+                    medicineNameInput.value = draft.name || '';
+                    safetyStockInput.value = draft.safety_stock || '';
+                    currentStockInput.value = draft.current_stock || '';
+                    updateStockVisualization();
+                    
+                    // Show loaded message
+                    const loadedMessage = document.createElement('div');
+                    loadedMessage.className = 'message message-success';
+                    loadedMessage.innerHTML = '<i class="fas fa-history"></i> Loaded saved draft';
+                    loadedMessage.style.display = 'flex';
+                    
+                    form.insertBefore(loadedMessage, form.firstChild);
+                    
+                    setTimeout(() => {
+                        loadedMessage.style.display = 'none';
+                    }, 3000);
+                    
+                } catch (e) {
+                    console.log('No saved draft found');
+                }
+            }
+        });
+
+        // Clear draft on successful submit
+        form.addEventListener('submit', () => {
+            localStorage.removeItem('medicineFormDraft');
+        });
+    </script>
+</body>
+</html>
