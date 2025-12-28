@@ -203,3 +203,82 @@ The Reports page provides complete visibility of available medicines and invento
 
 ---
 
+
+## 🚀 How to Run PharmaOS (Step-by-Step)
+
+### 1. Clone the Repository
+Open your terminal or command prompt and run:
+```bash
+git clone [https://github.com/rajashekarbumandla/PharmaOS.git](https://github.com/rajashekarbumandla/PharmaOS.git)
+cd PharmaOS
+
+```
+
+---
+
+### 2. Create and Activate Virtual Environment
+
+**Windows:**
+
+```bash
+python -m venv venv
+venv\Scripts\activate
+
+```
+
+**macOS / Linux:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+
+```
+
+---
+
+### 3. Install Required Libraries
+
+Ensure your virtual environment is active, then run:
+
+```bash
+pip install -r requirements.txt
+
+```
+
+---
+
+### 4. Run the Application
+
+Start the Flask server:
+
+```bash
+python app.py
+
+```
+
+---
+
+### 5. Open in Browser
+
+Once the server is running, navigate to:
+👉 **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+
+---
+
+## 🔑 OTP & Authentication Note
+
+* **Local Run:** The OTP is sent to the registered email address.
+* **No Email Configured?** If you haven't set up SMTP credentials, check your **terminal/command prompt** output; the OTP will be printed there.
+* **Cloud Deployment:** For hosted versions, check your **server logs** to retrieve the OTP.
+
+```
+
+👥 Team Details
+This project was developed for ZENITH25.
+Team Name: Bit Bash
+Team Lead: B. Rajashekar
+Team Members:
+Member Name 1:B. Shanmukh Siddhartha
+Member Name 2:G. Tejas
+Member Name 3.P. Pranav Bharadwaj
+
