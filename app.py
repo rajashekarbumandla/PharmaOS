@@ -423,15 +423,25 @@ def seasonal():
             "available": med in inventory_meds
         })
 
+    # Determine pharmacy name from session or DB
+    pharmacy_name = session.get("user_name")
+    if not pharmacy_name:
+        try:
+            user = User.query.get(session.get("user_id"))
+            pharmacy_name = user.name if user else None
+        except Exception:
+            pharmacy_name = None
+
     return render_template(
         "seasonal_intelligence.html",
         season=season,
         reason=seasonal_info["reason"],
-        medicines=seasonal_meds
+        medicines=seasonal_meds,
+        pharmacy_name=pharmacy_name
     )
 
 
-# ---------- INVENTORY (FEFO) ----------
+
 # ---------- INVENTORY (FEFO) ----------
 @app.route("/inventory")
 @login_required
@@ -507,7 +517,7 @@ def inventory():
 
 
 
-# ---------- FORECAST ----------
+
 # ---------- FORECAST ----------
 @app.route("/forecast")
 @login_required
@@ -535,12 +545,22 @@ def forecast():
         avg_values.append(avg)
         reorder_values.append(reorder)
 
+    # Determine pharmacy name from session or DB (so template can show user name)
+    pharmacy_name = session.get("user_name")
+    if not pharmacy_name:
+        try:
+            user = User.query.get(session.get("user_id"))
+            pharmacy_name = user.name if user else None
+        except Exception:
+            pharmacy_name = None
+
     return render_template(
         "forecast.html",
         forecast=forecast_data,
         labels=labels,
         avg_values=avg_values,
-        reorder_values=reorder_values
+        reorder_values=reorder_values,
+        pharmacy_name=pharmacy_name
     )
 
 
@@ -558,7 +578,16 @@ def alerts():
                 "drug": p["Drug_Name"],
                 "msg": f"Expires in {days} days"
             })
-    return render_template("alerts.html", alerts=alerts)
+    # Determine pharmacy name from session or DB
+    pharmacy_name = session.get("user_name")
+    if not pharmacy_name:
+        try:
+            user = User.query.get(session.get("user_id"))
+            pharmacy_name = user.name if user else None
+        except Exception:
+            pharmacy_name = None
+
+    return render_template("alerts.html", alerts=alerts, pharmacy_name=pharmacy_name)
 
 @app.route("/add_medicine", methods=["GET", "POST"])
 @login_required
